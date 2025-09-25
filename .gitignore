@@ -1,0 +1,102 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.Python
+
+# Virtual environments
+.venv/
+.env
+venv/
+ENV/
+env/
+
+# Security & Credentials
+.env.local
+.env.production
+.env.*.local
+*.key
+*.pem
+*.p12
+*.pfx
+config.json
+secrets.json
+credentials.json
+auth.json
+token.txt
+*.token
+.secrets/
+
+# API Keys & Configuration
+openai_api_key
+anthropic_api_key
+github_token
+google_credentials
+.mcp_config
+mcp_config.json
+.mcp.json
+
+# Claude Code user settings
+.claude/
+
+# Operating System
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.metadata
+.settings/
+*.sublime-*
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+logs/
+*.pid
+*.seed
+*.coverage
+.nyc_output
+
+# Development
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Large media files (optional - transcript downloads)
+transcripts/*.vtt
+transcripts/*.srt
+downloads/
+*.mp4
+*.webm
+*.mkv
+
+# Local development
+.local/
+tmp/
+temp/
+scratch/
+playground/
+
+# transcripts directory

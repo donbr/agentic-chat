@@ -1,0 +1,54 @@
+[project]
+name = "agentic-chat"
+version = "0.1.0"
+description = "AI-powered educational content generator that transforms video tutorials into comprehensive study guides and technical walkthroughs"
+readme = "README.md"
+authors = [
+    {name = "Agentic Chat Contributors"}
+]
+license = {text = "MIT"}
+keywords = [
+    "ai", "education", "content-generation", "video-processing", "study-guides",
+    "mcp", "youtube", "transcripts", "chatgpt", "openai", "rag", "agents",
+    "mermaid", "diagrams", "documentation", "ai-makerspace"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Text Processing :: Markup :: Markdown",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+]
+requires-python = ">=3.11"
+dependencies = [
+    "yt-dlp>=2025.9.23",
+]
+
+[project.urls]
+Homepage = "https://github.com/donbr/agentic-chat"
+Repository = "https://github.com/donbr/agentic-chat"
+Issues = "https://github.com/donbr/agentic-chat/issues"
+Documentation = "https://github.com/donbr/agentic-chat#readme"
+"Source Code" = "https://github.com/donbr/agentic-chat"
+"Bug Tracker" = "https://github.com/donbr/agentic-chat/issues"
+"AI Makerspace" = "https://www.aimakerspace.com/"
+"Original Series" = "https://www.youtube.com/playlist?list=PLrSHiQgy4VjG1B5TXPn99eKf52zSnEUZz"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]
+exclude = ["tests*", "docs*", ".venv*", "build*", "dist*"]

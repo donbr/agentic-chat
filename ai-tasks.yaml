@@ -1,0 +1,129 @@
+version: "1.0"
+project: "How to Build ChatGPT — Research & Code Companion"
+description: >
+  Unified YAML containing two research tasks:
+  (1) Study Guide creation and (2) Code Walkthrough & Commentary
+  for the AI Makerspace series.
+
+references:
+  videos:
+    playlist: "https://www.youtube.com/playlist?list=PLrSHiQgy4VjG1B5TXPn99eKf52zSnEUZz"
+    part1: "https://www.youtube.com/live/OkqnAk1eH4M?si=9XJ0KcqMjR2ft6Fo"
+    part2: "https://www.youtube.com/live/BAtY88cw3rw?si=YBen_HcAfx89s3aE"
+    part3: "https://www.youtube.com/live/qQ6nCN6ynXo"
+    part4: "https://www.youtube.com/live/t13Y5Igh66U?si=fZSLA-Ty8hP4ugd6"
+  code:
+    main: "https://github.com/AI-Maker-Space/How-to-Build-ChatGPT"
+    branches:
+      - "https://github.com/AI-Maker-Space/How-to-Build-ChatGPT/tree/feature/agents-sdk-research-agent"
+      - "https://github.com/AI-Maker-Space/How-to-Build-ChatGPT/tree/feat/chatgpt-frontend"
+  companion_doc: "Uploaded expert study guide (local)."
+
+metadata:
+  author: "Don"
+  created: "2025-09-24"
+  last_updated: "2025-09-24"
+  tags: ["RAG", "Agents SDK", "LangGraph", "Study Guide", "Code Walkthrough", "Frontend", "Deployment"]
+  diagrams_required: true
+
+assumptions:
+  - Audience: hands-on AI engineers familiar with Python, containers, and basic LLM APIs.
+  - Scope emphasizes GitHub code (Parts 2–4 are repo-first), with notebooks referenced only if needed.
+  - Platform-agnostic; examples reference OpenAI, but concepts generalize.
+
+non_goals:
+  - Full re-implementation of the projects.
+  - Shipping cloud infra manifests beyond sketches (Terraform/K8s).
+  - Handling secrets beyond local/dev guidance.
+
+guardrails:
+  - Cite every non-obvious claim to the series videos or specific repo files/lines.
+  - Prefer minimal, runnable code fragments; avoid long monoliths.
+  - Flag gaps explicitly; do not fabricate paths/APIs.
+
+tasks:
+  - id: build-chatgpt-study-guide
+    name: "Study Guide Research"
+    role: "Expert AI curriculum designer"
+    objective: >
+      Create a concise, step-by-step study guide covering:
+      (1) Prompting & Responses API, (2) RAG & Connectors,
+      (3) Agentic Search & Agents SDK, and (4) Vibe-Coding & Deployment.
+    inputs:
+      sources:
+        videos:
+          - "{{references.videos.playlist}}"
+          - "{{references.videos.part1}}"
+          - "{{references.videos.part2}}"
+          - "{{references.videos.part3}}"
+          - "{{references.videos.part4}}"
+        code:
+          - "{{references.code.main}}"
+          - "{{references.code.branches[0]}}"
+          - "{{references.code.branches[1]}}"
+        companion: "{{references.companion_doc}}"
+    deliverables:
+      format: "markdown"
+      file: "./outputs/documents/study_guide.md"
+      sections:
+        - "Overview & Learning Path"
+        - "Part 1 — Prompting & Responses API"
+        - "Part 2 — RAG & Connectors"
+        - "Part 3 — Agentic Search & Agents SDK"
+        - "Part 4 — Vibe-Coding & Deployment"
+        - "Next Steps (Evaluation, Observability, Cost/Performance)"
+      diagrams:
+        - id: study-guide-map
+          file: outputs/diagrams/study_guide_concept.md
+          title: "Study Guide Concept Map"
+      required_assets:
+        - outputs/diagrams/study_guide_concept.md
+
+  - id: build-chatgpt-code-walkthrough
+    name: "Code Walkthrough & Commentary"
+    role: "Senior AI engineer -> code reviewer"
+    objective: >
+      Provide a guided walkthrough of the GitHub repository across all four parts,
+      focusing on code in the repo (Parts 2–4 are GitHub-first), not just notebooks.
+      Include architecture, data/control flow, and ≥5 production extension suggestions.
+    inputs:
+      repos:
+        - "{{references.code.main}}"
+        - "{{references.code.branches[0]}}"
+        - "{{references.code.branches[1]}}"
+      videos:
+        - "{{references.videos.part1}}"
+        - "{{references.videos.part2}}"
+        - "{{references.videos.part3}}"
+        - "{{references.videos.part4}}"
+    deliverables:
+      format: "markdown"
+      file: "./outputs/documents/code_walkthrough.md"
+      sections:
+        - "Architecture at a Glance"
+        - "Part 1 — Prompting & Responses API"
+        - "Part 2 — RAG & Connectors"
+        - "Part 3 — Agentic Search & Agents SDK"
+        - "Part 4 — Frontend & Deployment"
+        - "Gaps & Enhancements"
+      diagrams:
+        - id: code-walkthrough-arch
+          file: outputs/diagrams/code_walkthrough_arch.md
+          title: "Repo Architecture (Code Walkthrough)"
+        - id: runner-tasks
+          file: outputs/diagrams/runner_tasks.md
+          title: "Runner → Tasks → Outputs"
+        - id: e2e-sequence
+          file: outputs/diagrams/e2e_sequence.md
+          title: "End-to-End Sequence"
+      required_assets:
+        - outputs/diagrams/code_walkthrough_arch.md
+        - outputs/diagrams/runner_tasks.md
+        - outputs/diagrams/e2e_sequence.md
+
+runner:
+  type: "sequential"
+  output_dir: "./outputs"
+  steps:
+    - run: "build-chatgpt-study-guide"
+    - run: "build-chatgpt-code-walkthrough"
