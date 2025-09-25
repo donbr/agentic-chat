@@ -41,7 +41,7 @@ The Responses API represents a fundamental shift from the traditional system/use
 Key advantages over traditional chat completions:
 - **Developer-centric design**: Instructions prioritized for application builders
 - **Native Pydantic model support**: Structured outputs without complex parsing
-- **Reasoning effort control**: "low", "medium", "high", and secretly "minimal" settings *([Part 1](https://www.youtube.com/live/OkqnAk1eH4M))*
+- **Reasoning effort control**: "low", "medium", "high", and secretly "minimal" settings for performance optimization *([Part 1](https://www.youtube.com/live/OkqnAk1eH4M))*
 - **Multimodal input capabilities**: Text + images in a single request
 - **Production-ready streaming**: Including structured response streaming
 
@@ -57,15 +57,30 @@ response = client.responses.create(
 ```
 
 #### Reasoning Control
-The API provides fine-grained control over AI reasoning effort and style:
+
+**Reasoning Effort Deep Dive**: The API provides strategic control over AI reasoning intensity for cost and performance optimization *([Part 1](https://www.youtube.com/live/OkqnAk1eH4M))*:
+
+- **Minimal**: Converts o1 models to behave like GPT-4o - "despite being o1-5, feels more like 4o" for simple tasks, reducing cost and latency
+- **Low**: Basic reasoning for straightforward problems with faster response times
+- **Medium**: Standard reasoning for most production applications
+- **High**: Deep reasoning for complex problem-solving requiring extended analysis
+- **Secret**: "Minimal" is the undocumented fourth option for performance optimization
 
 ```python
-# Control reasoning effort
+# Performance-optimized reasoning for simple tasks
 response = client.responses.create(
     model="gpt-5",
-    reasoning={"effort": "low"},
+    reasoning={"effort": "minimal"},  # Secret setting for GPT-4o-like behavior
     instructions="Talk like a wizard.",
     input="How to write an efficient loop with NumPy?"
+)
+
+# Deep reasoning for complex problems
+response = client.responses.create(
+    model="gpt-5",
+    reasoning={"effort": "high"},
+    instructions="Analyze this complex system architecture.",
+    input="[Complex technical analysis request]"
 )
 ```
 
@@ -96,10 +111,25 @@ response = client.responses.parse(
 - Build streaming response systems for real-time interaction
 
 ### Key Takeaways
+
+#### Critical Prompting Best Practice
+**XML Over Markdown/JSON**: The most important single prompting tip from the series *([Part 1](https://www.youtube.com/live/OkqnAk1eH4M))*:
+- "If you take one prompting tip from the guide, it's please use XML, right? It's just better than using a markdown format for your prompts"
+- XML provides cleaner structured prompts than JSON
+- Better parsing and handling by LLMs
+- More reliable for complex prompt engineering
+- Industry best practice for production applications
+
+#### The Context Engineering Paradigm Shift
+**Beyond Prompt Engineering**: We're living in the "context engineering era" *([Part 1](https://www.youtube.com/live/OkqnAk1eH4M))*:
+1. **Prompt Engineering**: Instructions and behavior definition
+2. **RAG**: Knowledge and information retrieval
+3. **Agents**: Tool usage and dynamic reasoning
+4. **State Management**: History, memory, and session handling
+
+**Critical Insight**: "Prompting hasn't become less important over time...we're leaving more on the table" - better models mean greater potential if properly prompted.
+
 - **Evolution beyond chat completions**: "As model capabilities continue to evolve, we believe the responses API will provide a more flexible foundation for building agentic applications" *([Part 1](https://www.youtube.com/live/OkqnAk1eH4M))*
-- **Developer prompt importance**: "Prompting hasn't become less important over time...we're leaving more on the table" if not optimized *([Part 1](https://www.youtube.com/live/OkqnAk1eH4M))*
-- **Context engineering era**: Moving beyond prompt engineering to comprehensive context management including "state or history...memory...structured outputs...RAG...using tools and calling functions" *([Part 1](https://www.youtube.com/live/OkqnAk1eH4M))*
-- **XML over JSON**: For prompt structuring, "use XML, right? It's just better than using a markdown format for your prompts" *([Part 1](https://www.youtube.com/live/OkqnAk1eH4M))*
 
 ---
 
@@ -153,7 +183,20 @@ The fundamental principle: "As goes retrieval, so goes generation" - retrieval q
 
 **RAG vs MCP Relationship**: "MCP is kind of doing RAG...It's connecting us to data sources that we can then use to augment our context" but operates at a higher abstraction level *([Part 2](https://www.youtube.com/live/BAtY88cw3rw))*.
 
-**Security Considerations**: "It's not very secure...out of the box...we're giving access to the LLM as soon as we do that OAuth. There's two flavors of security...standard OAuth 2.0...and a intelligence mimicking system that has access to your information" *([Part 2](https://www.youtube.com/live/BAtY88cw3rw))*.
+### Data Connector Security Deep Dive
+**Dual Security Challenge** *([Part 2](https://www.youtube.com/live/BAtY88cw3rw))*:
+
+**Critical Warning**: "It's not very secure out of the box" - requires additional security layers for production deployment.
+
+**Two Security Flavors**:
+1. **Technical Security**: Standard OAuth 2.0 implementation - familiar authentication patterns
+2. **AI Security**: "Intelligence mimicking system that has access to your information" - unprecedented challenge of AI systems with data access
+
+**Production Considerations**:
+- Standard OAuth alone is insufficient for AI-enabled systems
+- Need additional authorization layers beyond authentication
+- Consider data access patterns and AI decision-making implications
+- Implement audit trails for AI data access and usage
 
 **Abstraction Benefits**: With the Responses API, "we actually don't really need to do all of this ourselves anymore" - the embedding model and vector store are handled automatically, though "that doesn't mean you shouldn't care about what happens inside anymore" *([Part 2](https://www.youtube.com/live/BAtY88cw3rw))*.
 
@@ -191,6 +234,14 @@ This evolution drives the need for:
 **Multi-Agent Systems**: "A system that can leverage reasoning from multiple independent agents to make dynamic decisions in an application flow" *([Part 3](https://www.youtube.com/live/qQ6nCN6ynXo))*.
 
 **OpenAI Agents SDK**: Evolution from Swarm (October 2024), providing orchestration for multi-agent workflows with "routines and handoffs" as key constructs *([Part 3](https://www.youtube.com/live/qQ6nCN6ynXo))*.
+
+### The Atomic Agent Concept
+**Fundamental Definition**: The canonical agent is simply *([Part 3](https://www.youtube.com/live/qQ6nCN6ynXo))*:
+- "All it is is the LLM decides whether or not to call a tool or not call a tool"
+- **Single decision point**: Tool usage vs. direct response
+- **The OG Agent**: "That's the canonical agent...that's the OG agent"
+- **Atomic Building Block**: All complex multi-agent systems build from this fundamental unit
+- **Complexity Expansion**: Everything else is complexity that "expands rapidly" beyond the atomic level
 
 **Critical Decision Framework**: "Do I really need dynamic reasoning to solve the task more effectively than a rigid workflow could?" - only build agents when true agency is needed *([Part 3](https://www.youtube.com/live/qQ6nCN6ynXo))*.
 
@@ -262,12 +313,31 @@ Each agent has a specific, well-defined role:
 
 **The Atomic Agent**: "All it is is the LLM decides whether or not to call a tool or not call a tool...that's the canonical agent...that's the OG agent" *([Part 3](https://www.youtube.com/live/qQ6nCN6ynXo))*.
 
+### Technical Decision Framework
+
+#### When to Build Agents vs. Workflows
+**Key Decision Points** *([Part 3](https://www.youtube.com/live/qQ6nCN6ynXo))*:
+1. **Agent Necessity Assessment**: "Do I really need dynamic reasoning to solve the task more effectively than a rigid workflow could?"
+2. **Complexity Indicator**: "Do I have too many if-else paths?" - high branching suggests agent utility
+3. **User Experience Focus**: "Your user doesn't really care what patterns we use. They just want our app to produce a great output"
+
+#### Agent vs. Tool Decision Matrix
+**Choose Agents When**:
+- Dynamic reasoning improves outcomes over static workflows
+- Multiple decision paths require intelligent routing
+- Context changes require adaptive responses
+
+**Choose Tools/Workflows When**:
+- Deterministic outcomes are sufficient
+- Performance and predictability are priorities
+- Simple branching logic handles all cases
+
 ### Learning Objectives
-- **Agent necessity assessment**: Apply the framework "do I have too many if-else paths?" to determine when agents are needed
+- **Agent necessity assessment**: Apply decision frameworks to determine when agents add value
 - **Multi-agent orchestration**: Implement specialized agents with "separation of concerns" and "single-responsibility principle"
 - **Context engineering mastery**: Leverage agents as "systems that do the context engineering" *([Part 3](https://www.youtube.com/live/qQ6nCN6ynXo))*
 - **Performance through parallelization**: "Very simple agents" can produce "incredible behavior" through composition
-- **Production readiness**: Build systems where "your user doesn't really care what patterns we use. They just want our app to produce a great output" *([Part 3](https://www.youtube.com/live/qQ6nCN6ynXo))*
+- **Production readiness**: Build systems optimized for user outcomes, not architectural complexity
 
 ---
 
@@ -340,19 +410,27 @@ npm run dev
 - **Staging**: Preview deployments for testing
 - **Production**: One-click GitHub deployment to Vercel
 
-### "Vibe Coding" Methodology
+### "Vibe Coding" Methodology: Reality vs. Hype
+
+#### What Vibe Coding Really Is *([Part 4](https://www.youtube.com/watch?v=t13Y5Igh66U))*
+**Honest Assessment**: "Vibe coding is dope...but it's not really that interesting beyond that it's kind of dope"
+
+**Core Reality**:
+- AI-assisted rapid prototyping methodology
+- Effective for initial development phases and experimentation
+- **Critical Limitation**: "You're going to hit a wall real early with vibe coding in a way that's undesirable"
+
+#### Professional Development Approach
+**Balanced Strategy**:
+1. **Use Vibe Coding For**: Rapid iteration, concept validation, initial prototyping
+2. **Transition To Structured Development For**: Production systems, maintainable codebases, scalable architectures
+3. **Balance AI Assistance With**: Engineering fundamentals, testing practices, code review processes
 
 #### Core Principles
 1. **AI-Assisted Development**: Using Cursor IDE for enhanced productivity
-2. **Iterative Experimentation**: Rapid prototyping and testing
-3. **Community Collaboration**: Sharing learnings and code patterns
-4. **Production Focus**: Building deployable, scalable applications
-
-#### Development Workflow
-- **Rapid Prototyping**: Quick concept validation
-- **Collaborative Learning**: Community-driven problem solving
-- **Continuous Deployment**: Automated deployment pipeline
-- **User Feedback Integration**: Direct user input into development cycle
+2. **Iterative Experimentation**: Rapid prototyping with clear transition points
+3. **Community Collaboration**: Sharing learnings and realistic expectations
+4. **Production Reality**: Understanding when to move beyond vibe coding
 
 ### Learning Objectives
 - Build modern full-stack applications with Next.js and FastAPI

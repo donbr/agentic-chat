@@ -134,6 +134,15 @@ make transcripts       # Download video transcripts using yt-dlp
 # Manual validation commands
 wc -l outputs/documents/* outputs/diagrams/*
 grep -c "\*(\[Part" outputs/documents/study_guide.md outputs/documents/code_walkthrough.md
+
+# Transcript processing commands
+python scripts/download_transcripts.py  # Download YouTube transcripts as VTT files
+python scripts/clean_transcripts.py     # Clean and deduplicate VTT transcripts
+
+# Content quality verification
+wc -l outputs/documents/study_guide.md  # Should be ~463 lines for complete guide
+wc -l outputs/documents/code_walkthrough.md  # Should be ~496 lines for complete walkthrough
+wc -l outputs/diagrams/*.md  # Should be 119-209 lines per diagram file
 ```
 
 ### Development Workflow
@@ -142,6 +151,11 @@ make lint              # Run ruff linting (optional - requires ruff)
 make format            # Run black formatting (optional - requires black)
 make clean             # Clean temporary files and caches
 make ci                # Run full CI checks (docs + check)
+
+# Directory structure verification
+ls -la outputs/        # Check main output directory
+ls -la outputs/documents/ outputs/diagrams/ outputs/documentation/  # Verify deliverables
+ls -la transcripts/    # Check transcript files (if available locally)
 ```
 
 ## Project Architecture
@@ -152,6 +166,13 @@ This project is **AI-driven content generation** focused on producing educationa
 - **Source integration**: Combines video transcripts + GitHub repos + MCP tools
 - **Structured output**: Organized deliverables in `outputs/` with proper citations
 - **Reproducibility**: Clear procedures for regenerating content
+
+### Transcript Processing Pipeline
+The project includes a complete transcript processing workflow:
+1. **Download**: `scripts/download_transcripts.py` extracts YouTube transcripts using yt-dlp
+2. **Clean**: `scripts/clean_transcripts.py` removes duplicates, formatting tags, and creates readable markdown
+3. **Process**: Raw VTT files → cleaned markdown → structured educational content
+4. **Backup**: Local VTT files serve as fallback when MCP access is unavailable
 
 ### Task Definition System (`ai-tasks.yaml`)
 Central configuration defining two main tasks:
@@ -168,9 +189,10 @@ Each task specifies inputs (video URLs, GitHub repos), deliverables (markdown se
 
 ### MCP Integration Architecture
 - **Primary**: `mcp__youtube-transcripts__download_youtube_url` for video content
-- **Fallback**: Local VTT files in `transcripts/` directory
+- **Fallback**: Local VTT files in `transcripts/` directory (gitignored)
 - **GitHub Access**: Repository analysis through MCP GitHub tools
 - **Content Processing**: Insights integrated with proper video timestamp citations
+- **Configuration**: MCP servers defined in `.mcp.json` (see `.mcp.json.example` for setup)
 
 ### Generated Deliverables Structure
 ```
@@ -198,6 +220,76 @@ transcripts/                # Local backup transcripts (gitignored)
 - **Diagram Generation**: Mermaid diagrams created as separate files in `outputs/diagrams/`
 - **Content Quality**: Minimal runnable code fragments, explicit gap identification
 - **Source Attribution**: Comprehensive citations maintaining academic standards
+- **Transcript Access**: Uses MCP for live transcript access, with local VTT files as backup
+- **Content Validation**: Built-in quality checks via make targets and manual verification commands
+
+### Advanced Usage Patterns
+
+**Working with Large Transcript Files**:
+```bash
+# Since transcript files are single long lines, use these approaches:
+grep -o "## \[.*\]" transcripts/part1_final.md | head -10  # Extract timestamps
+fold -w 100 transcripts/part1_final.md | head -50  # Read wrapped content
+```
+
+**Content Generation Quality Checks**:
+```bash
+# Verify comprehensive citation patterns
+grep -c "\*(\[Part" outputs/documents/study_guide.md  # Should show multiple citations
+grep "timestamp" outputs/documents/*.md  # Check for video timestamp references
+```
+
+**Multi-Branch Repository Analysis**:
+The project analyzes three GitHub repository branches:
+- `main`: Core educational notebooks
+- `feature/agents-sdk-research-agent`: Advanced multi-agent systems
+- `feat/chatgpt-frontend`: Full-stack production implementation
+
+Each branch contributes different architectural insights to the final deliverables.
+
+## Known Issues and Troubleshooting
+
+### Transcript Processing Issues
+**Problem**: Generated transcript files (`transcripts/part*_final.md`) appear as single long lines
+- Files are large (96-104KB) but show as 0 lines when using `wc -l`
+- Content is present but not properly formatted with line breaks
+- Makes searching and manual review difficult
+
+**Workaround**:
+```bash
+# View transcript content properly formatted
+head -20 /path/to/transcript | fold -w 80  # Wrap long lines for readability
+grep -o "## \[.*\]" transcripts/part1_final.md  # Extract time markers
+```
+
+**Root Cause**: The `clean_transcripts.py` script generates valid content but doesn't format output with proper line breaks for markdown readability.
+
+### Content Quality Standards
+**Complete Implementation Indicators**:
+- Study guide: ~463 lines with comprehensive video citations
+- Code walkthrough: ~496 lines with technical analysis
+- Diagrams: 4 files ranging 119-209 lines each
+- All content should include proper `*([Part X](video_url))*` citations
+
+**Missing Content Warning Signs**:
+- Empty or very short output files
+- Missing video timestamp citations
+- Diagram files with generic placeholder content
+
+### Content Quality Assessment Results
+**Current Implementation Status** (as of analysis):
+- ✅ **Study Guide**: 463 lines of comprehensive educational content with proper video citations
+- ✅ **Code Walkthrough**: 496 lines of technical analysis covering all repository branches
+- ✅ **Mermaid Diagrams**: 4 complete diagrams (119-209 lines each) with proper architecture visualization
+- ✅ **Documentation**: 128-line MCP setup guide with configuration details
+- ⚠️ **Transcripts**: Content available but requires formatting fix for optimal usability
+
+**Content Depth Indicators**:
+- Proper `*([Part X - Title](video_url))*` citation format throughout
+- Technical implementation details with code examples
+- Multi-repository branch analysis (main, agents-sdk, frontend)
+- Advanced architectural concepts (MCP, RAG, multi-agent systems)
+- Production deployment considerations
 
 ## Ready‑Made Prompts for Claude
 
